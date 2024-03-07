@@ -2,6 +2,7 @@ from pprint import pprint
 from datetime import datetime
 import json
 import re
+import argparse
 
 class JsonTransformer:
     def __init__(self, input_file: str):
@@ -10,9 +11,9 @@ class JsonTransformer:
         
     
     def load_json(self, file_name: str):
-        # import pdb;pdb.set_trace()
         with open(file_name, "r") as json_file:
             json_obj = json.load(json_file)
+
         return json_obj
     
     def is_rfc3339_formatted(self, input_string):
@@ -142,7 +143,7 @@ class JsonTransformer:
         
         transformed_map = {}
 
-        for sub_key, sub_item in value.items():
+        for sub_key, sub_item in sorted(value.items()):
             sub_key = sub_key.strip()
             item_type, item_value = next(iter(sub_item.items()))
             item_type = item_type.strip()  
@@ -167,10 +168,13 @@ class JsonTransformer:
         return transformed_map
 
 
-def main():
-    json_transformer = JsonTransformer("input.json")
+def main(file_name):
+    json_transformer = JsonTransformer(file_name)
     formatted_json = json_transformer.transform()
-    pprint(formatted_json, indent=1)
+    pprint(formatted_json)
     
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("file_path", help="Please provide the path of the JSON file to transform.")
+    args = parser.parse_args()
+    main(args.file_path)
